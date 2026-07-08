@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lesnichita",
+  "compatibility_date": "2026-07-08",
+  "assets": {
+    "directory": "./public"
+  },
+  "routes": [
+    {
+      "pattern": "lesnichita.info",
+      "custom_domain": true
+    }
+  ]
+}
