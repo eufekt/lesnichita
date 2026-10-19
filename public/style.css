@@ -32,6 +32,10 @@ main {
   margin-top: 1rem;
 }
 
+main section + section {
+  margin-top: 1.5rem;
+}
+
 h2 {
   font-size: 1rem;
   font-weight: 400;
@@ -49,4 +53,61 @@ a {
 a:hover {
   background: #000;
   color: #fff;
+}
+
+a.home {
+  text-decoration: none;
+}
+
+main li + li {
+  margin-top: 1rem;
+}
+
+.project-description,
+.project-tags {
+  max-width: 40rem;
+  margin-top: 0.25rem;
+}
+
+.project > * + * {
+  margin-top: 0.5rem;
+}
+
+.project .images {
+  margin-top: 1.5rem;
+}
+
+.project-thumb {
+  display: block;
+  width: 18rem;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+[data-projects] a.image-link {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.project a.image-link {
+  display: block;
+  max-width: 48rem;
+}
+
+.meta-image,
+.images img {
+  display: block;
+  width: 100%;
+  max-width: 48rem;
+  height: auto;
+}
+
+a.image-link {
+  text-decoration: none;
+}
+
+a.image-link:hover {
+  background: transparent;
+  color: inherit;
 }
