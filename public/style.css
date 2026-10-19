@@ -85,7 +85,7 @@ main li + li {
   margin-bottom: 0.5rem;
 }
 
-[data-projects] a.image-link {
+.work a.image-link {
   display: inline-block;
   max-width: 100%;
 }

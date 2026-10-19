@@ -6,7 +6,8 @@ Personal site of Nichita Hariton. Plain HTML + CSS, no build step, no dependenci
 
 - `public/` — the entire site (static files). This folder is the deploy artifact and is portable to any static host.
 - `public/projects.json` — project catalog. The homepage lists these under work.
-- `public/projects/<slug>/` — one page per project. The folder name is the slug.
+- `public/projects/<slug>/` — one static page per project. The folder name is the slug.
+- `scripts/sync-projects.py` — reads the catalog and Are.na, then writes those pages.
 - `wrangler.jsonc` — Cloudflare Workers static assets config, with the `lesnichita.info` custom domain.
 - `.github/workflows/deploy.yml` — deploys to Cloudflare on every push to `main`.
 
@@ -22,13 +23,15 @@ Each entry in `public/projects.json` has:
 - `meta_image` — a direct image URL, or an Are.na block URL such as `https://www.are.na/block/10298222`
 - `arena_channel` — optional Are.na channel URL. The project page shows that channel's images.
 
-Are.na is read in the browser from the public API, with no token. Docs: [https://www.are.na/developers/explore](https://www.are.na/developers/explore).
+Pages are static HTML. A visit does not call Are.na. Refresh them with:
 
-- A block image is `GET https://api.are.na/v3/blocks/:id`.
-- Channel contents are `GET https://api.are.na/v3/channels/:slug/contents`, following `meta.has_more_pages`. Order is `position_desc`, the same order as the channel page.
-- GIFs use the original file so they stay animated. Other images use Are.na's resized versions.
+```sh
+python3 scripts/sync-projects.py
+```
 
-To add a project, add an object to `projects.json` and copy `public/projects/a-la-recherche-des-textures/index.html` to `public/projects/<slug>/index.html`. Set that file's `<title>`, description, and canonical URL. The page body is filled from the catalog.
+The script reads the public API ([docs](https://www.are.na/developers/explore)): `GET /v3/channels/:slug/contents`, in the channel's own order, and `GET /v3/blocks/:id` for a meta image that is not already in the channel. Stills use Are.na's small and medium renditions. A file over 2 MB, including this channel's gif, is saved as a still; the original loads only if that still is opened.
+
+To add a project, add an object to `projects.json` and run the script. It writes `public/projects/<slug>/index.html` and the homepage list. Edit the catalog, not the generated HTML.
 
 ## Deploy manually
 
