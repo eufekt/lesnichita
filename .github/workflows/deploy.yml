@@ -3,15 +3,50 @@ name: Deploy to Cloudflare
 on:
   push:
     branches: [main]
+  schedule:
+    # Are.na does not notify us when a channel changes, so check hourly.
+    # GitHub may start the run later than the clock time.
+    - cron: "17 * * * *"
+  workflow_dispatch:
 
 jobs:
   deploy:
+    # Commits made by this workflow include [skip ci] so they do not start another deploy.
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Refresh projects from Are.na
+        run: python3 scripts/sync-projects.py
+
+      - name: Check for channel changes
+        id: channel
+        run: |
+          git add public/index.html public/projects
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy
+        if: github.event_name != 'schedule' || steps.channel.outputs.changed == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.108.0"
+
+      - name: Save channel updates
+        if: steps.channel.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update project pages from Are.na [skip ci]"
+          git push

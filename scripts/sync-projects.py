@@ -4,7 +4,8 @@
 Are.na's docs ask sites to fetch channel data ahead of time instead of calling
 the API on every visit: https://www.are.na/developers/explore
 
-Usage: python3 scripts/sync-projects.py
+GitHub Actions runs this before each deploy, and every hour, so channel edits
+are published without running it by hand.
 """
 
 import html
